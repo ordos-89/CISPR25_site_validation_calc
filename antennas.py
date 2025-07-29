@@ -2,7 +2,7 @@
 обладать методом, позволяющим вычислить к-т калибровки на произвольной частоте из своего диапазона."""
 import logging
 import pandas as pd
-
+import numpy as np
 import auxillary
 
 # use pd.read_excel to obtain DataFrame for antenna factors.
@@ -38,22 +38,30 @@ class Antenna:
 
             # In other cases, count the AF value by linear interpolation
             else:
-                # Получаем дата-фрейм из двух строк, между которыми лежит искомое значение:
-                subrange = af.iloc[(af[f_col_name] - freq).abs().argsort()][:2]
-                l_logger.debug(subrange)
+                # находим индекс ближайшего к искомой частоте значения в столбце частоты:
+                nearest_idx = np.abs(af[f_col_name] - freq).idxmin()
+
+                # Определяем шаг: какой брать второй индекс
+                step = 1 if af[f_col_name].iloc[nearest_idx] < freq else -1
+
+                # Получаем дата-фрейм из двух строк, между которыми лежит искомое значение
+                subrange = af.iloc[[nearest_idx, nearest_idx + step]][:]
+
+                # subrange = af.iloc[(af[f_col_name] - freq).abs().argsort()][:1]
+                # l_logger.debug(subrange)
 
                 # Добавляем новую строку с указанной частотой и NaN для AF
                 subrange.loc[-1] = [freq, None]
-
-                l_logger.debug(subrange)
+                # l_logger.debug(subrange)
 
                 # Сортируем по частоте (важно для корректной интерполяции)
                 subrange = subrange.sort_values(f_col_name).reset_index(drop=True)
-                l_logger.debug(subrange)
+                # l_logger.debug(subrange)
+
                 # Выполняем линейную интерполяцию
                 subrange[af_col_name] = subrange[af_col_name].interpolate(method='linear')
+                # l_logger.debug(subrange)
 
-                l_logger.info('calculated AF: success!')
                 # Возвращаем интерполированное значение для новой частоты
                 return round(float(subrange.loc[subrange[f_col_name] == freq, af_col_name].values[0]), ndigits=2)
 

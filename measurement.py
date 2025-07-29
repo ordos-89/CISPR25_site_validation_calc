@@ -31,7 +31,7 @@ class MeasResult:
 
             # Получаем дата-фрейм из choose_from строк, среди которых лежит искомое значение:
             subrange = df.iloc[(df[f_col_name] - freq).abs().argsort()][:choose_from]
-            l_logger.debug(subrange.sort_index())
+            # l_logger.debug(subrange.sort_index())
 
             return round(max(subrange[val_col_name]), ndigits=3)
 

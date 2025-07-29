@@ -18,7 +18,7 @@ def check_frequency(frequency, min_freq, max_freq) -> float or None:
         l_logger.info(f'Bad frequency input: {frequency}')
         return None
     else:  # проверка вхождения частоты в диапазон частот антенны
-        if not min_freq < freq < max_freq:
+        if not min_freq <= freq <= max_freq:
             l_logger.info(f'Frequency {freq} is out of range! ({min_freq}, {max_freq})')
             return None
         else:

@@ -9,7 +9,7 @@ LOG_DIRECTORY = 'logs'
 LOG_FILE_PATTERN = os.path.join(LOG_DIRECTORY, 'app_*.log')
 LOG_FILE_LIMIT = 3
 LOG_FILE_SIZE = 1024
-LOG_LEVEL = 'DEBUG'
+LOG_LEVEL = 'INFO'
 
 
 def setup_logging():
