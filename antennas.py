@@ -2,17 +2,15 @@
 обладать методом, позволяющим вычислить к-т калибровки на произвольной частоте из своего диапазона."""
 import logging
 import pandas as pd
-import logger
+
 import auxillary
 
 # use pd.read_excel to obtain DataFrame for antenna factors.
 # Excel file must contain single sheet with headers. Or, specify sheet name.
 
 
-# Set up l_logger
-logger.setup_logging()
 #  create file-level l_logger?
-local_logger = logging.getLogger(__name__)
+l_logger = logging.getLogger(__name__)
 
 
 class Antenna:
@@ -42,22 +40,22 @@ class Antenna:
             else:
                 # Получаем дата-фрейм из двух строк, между которыми лежит искомое значение:
                 subrange = af.iloc[(af[f_col_name] - freq).abs().argsort()][:2]
-                local_logger.debug(subrange)
+                l_logger.debug(subrange)
 
                 # Добавляем новую строку с указанной частотой и NaN для AF
                 subrange.loc[-1] = [freq, None]
 
-                local_logger.debug(subrange)
+                l_logger.debug(subrange)
 
                 # Сортируем по частоте (важно для корректной интерполяции)
                 subrange = subrange.sort_values(f_col_name).reset_index(drop=True)
-                local_logger.debug(subrange)
+                l_logger.debug(subrange)
                 # Выполняем линейную интерполяцию
                 subrange[af_col_name] = subrange[af_col_name].interpolate(method='linear')
 
-                local_logger.info('calculated AF: success!')
+                l_logger.info('calculated AF: success!')
                 # Возвращаем интерполированное значение для новой частоты
-                return round(subrange.loc[subrange[f_col_name] == freq, af_col_name].values[0], ndigits=2)
+                return round(float(subrange.loc[subrange[f_col_name] == freq, af_col_name].values[0]), ndigits=2)
 
 
 def create_vulb():

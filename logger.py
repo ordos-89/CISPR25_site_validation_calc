@@ -52,3 +52,6 @@ def setup_logging():
         log_files.sort(reverse=True)
         for file_name in log_files[LOG_FILE_LIMIT:]:
             os.remove(os.path.join(LOG_DIRECTORY, file_name))
+
+
+setup_logging()
