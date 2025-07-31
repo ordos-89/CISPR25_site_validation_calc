@@ -9,8 +9,14 @@ import auxillary
 # Excel file must contain single sheet with headers. Or, specify sheet name.
 
 
-#  create file-level l_logger?
+#  create file-level l_logger
 l_logger = logging.getLogger(__name__)
+
+# Here we determine, which antenna to use in which frequency range
+atnennas_operating_ranges = {
+    'AH010': auxillary.freq_range(0.15, 29.99),
+    'VULB': auxillary.freq_range(30, 1000)
+}
 
 
 class Antenna:
@@ -64,9 +70,3 @@ class Antenna:
 
                 # Возвращаем интерполированное значение для новой частоты
                 return round(float(subrange.loc[subrange[f_col_name] == freq, af_col_name].values[0]), ndigits=2)
-
-
-def create_vulb():
-    af = pd.read_excel('antenna_factors/VULB.xlsx')
-    vulb = Antenna(name='VULB', af_table=af)
-    return vulb
