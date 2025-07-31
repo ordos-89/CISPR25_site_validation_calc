@@ -1,7 +1,10 @@
 import pandas as pd
 import logging
+from collections import namedtuple
 
 l_logger = logging.getLogger(__name__)
+
+freq_range = namedtuple('Freq_range', ('min_freq', 'max_freq'))
 
 
 def get_frequency_range(frame: pd.DataFrame):
@@ -25,7 +28,7 @@ def check_frequency(frequency, min_freq, max_freq) -> float or None:
             return freq
 
 
-def read_FSH8_csv_file(path_to_file: str, convert_to_MHz: bool = False) -> pd.DataFrame or None:
+def read_FSH8_csv_file(path_to_file: str, convert_to_MHz: bool = True) -> pd.DataFrame or None:
     """Передаём путь к файлу, 'снятому' с анализатора спектра FSH8.
     Получаем дата-фрейм"""
     # Read data from a specific CSV file. Drop preceding 45 rows of instrument data
@@ -63,3 +66,19 @@ def read_FSH8_csv_file(path_to_file: str, convert_to_MHz: bool = False) -> pd.Da
         l_logger.debug(f'columns:\n{fsh8_meas.columns.to_list()}')
 
     return fsh8_meas
+
+
+def get_dataframe(filename: str):
+    """Reads data from csv, xls or xlsx file into a DataFrame.
+    Checks if csv file is an FSH-8 measurements file and applies special algorythm for it."""
+    if '.csv' in filename:
+        with open(filename, 'r') as file:
+            first_line = file.readline()
+        if 'Name;Sweep;' in first_line:
+            return read_FSH8_csv_file(filename)
+        else:
+            return pd.read_csv(filename, sep=';', decimal=',')
+    elif any(x in filename for x in ('.xlsx', '.xls')):
+        return pd.read_excel(filename)
+    else:
+        return None

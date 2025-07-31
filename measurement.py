@@ -1,4 +1,7 @@
 import logging
+
+import pandas as pd
+
 import auxillary
 
 l_logger = logging.getLogger(__name__)
@@ -12,9 +15,9 @@ class MeasResult:
     из нескольких точек, лежащих наиболее близко к исходной частоте.
     ВНИМАНИЕ: данный класс рассчитан на работу с csv-файлами, полученными от FSH-8"""
 
-    def __init__(self, name: str, path_to_file: str):
+    def __init__(self, name: str, measurements: pd.DataFrame):
         self.name = name
-        self.measurements = auxillary.read_FSH8_csv_file(path_to_file, convert_to_MHz=True)
+        self.measurements = measurements
         self.min_freq, self.max_freq = auxillary.get_frequency_range(self.measurements)
 
     def find_value_for_frequency(self, frequency, choose_from=3) -> float or None:
